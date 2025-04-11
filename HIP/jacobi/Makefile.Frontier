@@ -1,0 +1,30 @@
+##**************************************************************************
+##* Copyright (c) 2022, Advanced Micro Devices, Inc. All rights reserved.
+##**************************************************************************
+
+# Notes for compiling Frontier.
+# 
+# Frontier uses 'srun' instead of 'mpirun' to execute MPI programs.
+
+# Set the path to rocm. For Frontier the environmental variable "ROCM_PATH" stores
+# this path. We define a target my_rocm_path that tests if the ROCM_PATH is defined.
+my_rocm_path:
+ifndef ROCM_PATH
+	@echo "ROCM_PATH environmnetal variable is undefined."
+	exit 1
+else
+	@echo "ROCM_PATH environmnetal variable is defined to ${ROCM_PATH}"
+endif
+
+# Define the installation directory of the binary.
+INSTALL_DIR=$(pwd)/bin
+
+# Define the HIP compiler and compiler flags.
+HIPCC=${ROCM_PATH}/bin/hipcc 
+
+HIPCFLAGS=-offload-arch=gfx90a
+
+# Define the MPI header files, compile and linking flags.
+MPI_CFLAGS=
+MPI_LDFLAGS=
+
