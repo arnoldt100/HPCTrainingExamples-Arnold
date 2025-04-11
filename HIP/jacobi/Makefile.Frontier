@@ -28,11 +28,11 @@ HIPCC=${ROCM_PATH}/bin/hipcc
 # Define the HIP compiler flags. We need the macro definition "-D__HIP_PLATFORM_HCC__"
 # to target the HIP version.
 HIP_CFLAGS=$(shell $(ROCM_PATH)/bin/hipconfig --cpp_config) \
-		   --offload-arch=gfx90a \
+           --offload-arch=gfx90a \
            -I$(ROCM_PATH)/roctracer/include -I${ROCM_PATH}/include/roctracer
 
 # Define the HIP linker flags.
-HIP_LDFLAGS=-L$(ROCM_PATH)/lib/ -lroctx64 -lroctracer64
+HIP_LDFLAGS=-L$(ROCM_PATH)/lib/ -lroctx64 -lroctracer64 -lamdhip64
 
 # Define some general C,C++ compilation flags.
 CFLAGS=-O3 -g -ggdb -fPIC -std=c++11 -march=native -Wall
