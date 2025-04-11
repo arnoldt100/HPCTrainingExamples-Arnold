@@ -2,7 +2,9 @@
 ##* Copyright (c) 2022, Advanced Micro Devices, Inc. All rights reserved.
 ##**************************************************************************
 
+# ----------------------------------------------------------------------
 # Set the path to ROCm. If ROCM_PATH is not defined the we exit.
+# ----------------------------------------------------------------------
 my_rocm_path:
 ifndef ROCM_PATH
 	@echo "ROCM_PATH environmnetal variable is undefined."
@@ -11,8 +13,13 @@ else
 	@echo "ROCM_PATH environmnetal variable is defined to ${ROCM_PATH}"
 endif
 
+# ----------------------------------------------------------------------
 # Tests to check have which MPI implementation we have.
 # If we can't identify the MPI implementation then exit.
+# 
+# If an MPI implementation is found, then use the appropriate
+# command line to get the MPI compile and link options.
+# ----------------------------------------------------------------------
 IS_OPEN_MPI=$(shell mpirun --version | grep "Open MPI")
 IS_MPICH=$(shell mpirun --version | grep mpich)
 ifneq ($(IS_OPEN_MPI),)
@@ -25,35 +32,50 @@ else
   $(error Unknown MPI implementation. Currently can't detect a MPICH or Open MPI implementation)
 endif
 
+# ----------------------------------------------------------------------
 # Define the installation directory of the binary.
+# ----------------------------------------------------------------------
 INSTALL_DIR=$(shell pwd)/bin
 
-# Define the HIP compiler and compiler flags.
+# ----------------------------------------------------------------------
+# Define the HIP compiler.
+# ----------------------------------------------------------------------
 HIPCC=${ROCM_PATH}/bin/hipcc 
 
-# Define the HIP compiler flags.We need the macro definition "-D__HIP_PLATFORM_HCC__"
-# to target the HIP version.
+# ----------------------------------------------------------------------
+# Define the HIP compiler flags.We use the hipconfig command
+# to to get some of the options.
+# ----------------------------------------------------------------------
 HIP_CFLAGS=$(shell $(ROCM_PATH)/bin/hipconfig --cpp_config) \
            -I$(ROCM_PATH)/roctracer/include \
            -I${ROCM_PATH}/include/roctracer
 
+# ----------------------------------------------------------------------
 # Define the HIP linker flags.
+# ----------------------------------------------------------------------
 HIP_LDFLAGS=-L$(ROCM_PATH)/lib/ -lroctx64 -lroctracer64 -lamdhip64
 
+# ----------------------------------------------------------------------
 # Define some general C,C++ compilation flags.
+# ----------------------------------------------------------------------
 CFLAGS=-O3 -g -ggdb -fPIC -std=c++11 -march=native -Wall
 
+# ----------------------------------------------------------------------
 # Define some general C,C++ linker flags.
+# ----------------------------------------------------------------------
 LDFLAGS=
 
+# ----------------------------------------------------------------------
 # Define the mpi compiler flags.
+# ----------------------------------------------------------------------
 MPI_CFLAGS=${MPICFLAGS}
 
-MPI_LDFLAGS=${MPILDFLAGS}
-
+# ----------------------------------------------------------------------
 # Define the MPI linking flags.
-MPICC=$(PREP) mpic++
+# ----------------------------------------------------------------------
+MPI_LDFLAGS=${MPILDFLAGS} 
 
-HIPCFLAGS=$(shell $(ROCM_PATH)/bin/hipconfig --cpp_config)
-
-## MPILD=$(PREP) $(ROCM_PATH)/bin/hipcc
+# ----------------------------------------------------------------------
+# Define the linker.
+# ----------------------------------------------------------------------
+LINKER=${HIPCC}

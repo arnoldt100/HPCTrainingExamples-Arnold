@@ -2,11 +2,14 @@
 ##* Copyright (c) 2022, Advanced Micro Devices, Inc. All rights reserved.
 ##**************************************************************************
 
-# Here we include the appropiate Makefile for building on your particular machine.
+# ----------------------------------------------------------------------
+# Here we include the appropriate Makefile for building on your particular
+# machine.
+# ----------------------------------------------------------------------
 include Makefile.Frontier
 
 # ----------------------------------------------------------------------
-# No other edits should be needed below this comment
+# No other edits should be needed below this comment.
 # ----------------------------------------------------------------------
 
 # Here we set the name of the binary.
@@ -52,14 +55,14 @@ Norm.o: $(DEPS) Norm.hip
 	$(HIPCC) $(HIP_CFLAGS) ${MPI_CFLAGS} $(CFLAGS) -c Norm.hip -o Norm.o
 
 $(BINARY): $(OBJS)
-	$(HIPCC) -o $(BINARY) $(OBJS) $(HIP_CFLAGS) $(CFLAGS) $(MPI_LDFLAGS) ${HIP_LDFLAGS} $(LDFLAGS) 
+	$(LINKER) -o $(BINARY) $(OBJS) $(HIP_CFLAGS) $(CFLAGS) $(MPI_LDFLAGS) ${HIP_LDFLAGS} $(LDFLAGS) 
 
 uninstall: 
 	rm -rf ${INSTALL_DIR}/*
 
 install:
 	mkdir -p ${INSTALL_DIR}
-	cp -f ${BINARY} ${INSTALL_DIR}
+	cp -f ${BINARY} ${INSTALL_DIR}/
 
 clean:
 	rm -rf *.o ${BINARY}
