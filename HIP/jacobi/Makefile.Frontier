@@ -43,7 +43,7 @@ HIP_CFLAGS=$(shell $(ROCM_PATH)/bin/hipconfig --cpp_config) \
 HIP_LDFLAGS=-L$(ROCM_PATH)/lib/ -lroctx64 -lroctracer64 -lamdhip64
 
 # ----------------------------------------------------------------------
-# Define some general C,C++ compilation flags.
+# Define some general C and C++ compilation flags.
 # ----------------------------------------------------------------------
 CFLAGS=-O3 -g -ggdb -fPIC -std=c++11 -march=native -Wall
 
