@@ -3,11 +3,14 @@
 ##**************************************************************************
 
 # Notes for compiling Frontier.
-# 
-# Frontier uses 'srun' instead of 'mpirun' to execute MPI programs.
+#
+# We use the AMD programming environment and cray-mpich. Pease see compiling setion 
+# https://docs.olcf.ornl.gov/systems/frontier_user_guide.html#compiling for more details
+# on compiling on Frontier.
 
-# Set the path to rocm. For Frontier the environmental variable "ROCM_PATH" stores
+# Set the path to ROCm. For Frontier the environmental variable "ROCM_PATH" stores
 # this path. We define a target my_rocm_path that tests if the ROCM_PATH is defined.
+# If ROCM_PATH is not defined the we exit.
 my_rocm_path:
 ifndef ROCM_PATH
 	@echo "ROCM_PATH environmnetal variable is undefined."
@@ -22,18 +25,25 @@ INSTALL_DIR=$(shell pwd)/bin
 # Define the HIP compiler and compiler flags.
 HIPCC=${ROCM_PATH}/bin/hipcc 
 
-HIP_CFLAGS=-D__HIP_PLATFORM_HCC__ --offload-arch=gfx90a \
-		-I$(ROCM_PATH)/roctracer/include -I${ROCM_PATH}/include/roctracer
+# Define the HIP compiler flags. We need the macro definition "-D__HIP_PLATFORM_HCC__"
+# to target the HIP version.
+HIP_CFLAGS=$(shell $(ROCM_PATH)/bin/hipconfig --cpp_config) \
+		   --offload-arch=gfx90a \
+           -I$(ROCM_PATH)/roctracer/include -I${ROCM_PATH}/include/roctracer
 
+# Define the HIP linker flags.
 HIP_LDFLAGS=-L$(ROCM_PATH)/lib/ -lroctx64 -lroctracer64
 
+# Define some general C,C++ compilation flags.
 CFLAGS=-O3 -g -ggdb -fPIC -std=c++11 -march=native -Wall
 
+# Define some general C,C++ linker flags.
 LDFLAGS=
 
-# Define the MPI header files, compile and linking flags.
+# Define the MPI header compile flags.
 MPI_CFLAGS=-I${MPICH_DIR}/include
 
+# Define the MPI linking flags.
 MPI_LDFLAGS=-L${MPICH_DIR}/lib -lmpi \
     ${CRAY_XPMEM_POST_LINK_OPTS} -lxpmem \
     ${PE_MPICH_GTL_DIR_amd_gfx90a} ${PE_MPICH_GTL_LIBS_amd_gfx90a}

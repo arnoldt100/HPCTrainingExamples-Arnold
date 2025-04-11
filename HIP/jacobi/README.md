@@ -44,10 +44,16 @@ To build and run the jacobi application on A+A hardware, the following dependenc
 
 ## Build Instructions
 
-A `Makefile` is included along with the source files that configures and builds multiple objects and then stitches them together to build the binary for the application `Jacobi_hip`. To build, simply run:
+A `Makefile` is included along with the source files that configures and builds multiple objects and then stitches them together to build the binary for the application `Jacobi_hip`. The `Makefile` contains an include directive to include other Makefiles that set critical compilation variables. For example the file `Makefile.Frontier` defines various compilation flags for 
+building on ORNL's AMD GPU supercomputer Frontier. One can use `Makefile.Frontier` as guide to create your own include machine dependent Makefile. After creating your machine dependent  Makefile, modify the main `Makefile` to include your machine dependent Makefile.
+
+To build, simply run:
 ```
-make
+make all
 ```
+
+This will build the binary and copy it to your designated location.
+
 An alternative cmake build system is also include
 ```
 mkdir build && cd build
